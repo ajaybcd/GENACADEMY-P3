@@ -8,6 +8,15 @@ A Streamlit app with three LangGraph specialists for correctness, security, and 
 
 Deployed from this repository's `main` branch using Python 3.12. The hosted demo requires no credentials; enter your own credentials in Connection settings for a live PR review.
 
+## Week 3 deliverables
+
+- [PowerPoint demo presentation](docs/deliverables/week3-code-review-demo.pptx): nine editable slides with speaker notes.
+- [Word demo guide and transcript](docs/deliverables/week3-demo-guide-and-transcript.docx): preparation steps, slide numbers, screen actions and the full 4:40 narration plan.
+- [Project documentation](https://docs.google.com/document/d/1652zGcwtH3stDpbz8DR-r_iDhZPvlOt1ypSi49oJldo/edit): architecture, prompts, development iterations, results and limitations.
+- [Three real sample reports](#three-real-samples) and the [evaluation summary](docs/three-sample-evaluation.txt).
+
+The presentation and guide follow the same nine sections. Prepare the live review before recording and rehearse once with a timer.
+
 ## Run locally
 
 Use Python 3.12:
