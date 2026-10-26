@@ -2,6 +2,12 @@
 
 A Streamlit app with three LangGraph specialists for correctness, security, and missing tests. Each specialist chooses focused tools, then a deterministic step anchors findings to added lines of a pinned GitHub commit. A human selects findings before any GitHub review can be posted.
 
+## Live app
+
+[Open Code Review Workbench](https://genacademy-p3-code-review.streamlit.app/)
+
+Deployed from this repository's `main` branch using Python 3.12. The hosted demo requires no credentials; enter your own credentials in Connection settings for a live PR review.
+
 ## Run locally
 
 Use Python 3.12:
