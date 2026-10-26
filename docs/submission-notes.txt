@@ -1,0 +1,75 @@
+WEEK 3 PROJECT DOCUMENTATION DRAFT
+
+Project overview
+Code Review Workbench helps engineers review Python pull requests in Streamlit.
+Three specialists investigate correctness, security and missing tests using
+dynamic tool loops. The orchestrator validates evidence and produces a ranked
+report. A person approves selected findings before a GitHub review is posted.
+
+Architecture
+PR URL -> bounded GitHub snapshot at a pinned commit -> Correctness specialist
+-> Security specialist -> Tests specialist -> deterministic validation and
+ranking -> LangGraph human interrupt -> selected findings -> guarded post.
+Each specialist can alternate between model decisions and focused tools rather
+than following a fixed analysis pipeline. Specialist execution is sequential to
+keep shared call limits and failure behavior easy to inspect.
+
+Data and evaluation
+The built-in demonstration uses synthetic Python fixtures for SQL injection,
+division by zero, and missing edge-case tests. It is for interface verification.
+The three real evaluation cases, their PR URLs, exact commits, expected issues,
+false positives and observed runtime must be recorded after live testing.
+Do not represent fixture outputs or scripted-model tests as live evaluation.
+Live analyses are now recorded for psf/requests PRs #6767, #6963 and #7502.
+Selected runs used 17, 12 and 14 model calls and returned 3, 2 and 0 findings.
+Exact commits, run IDs, traces and limitations are in docs/reports/real-1.json,
+real-2.json and real-3.json. See three-sample-evaluation.txt for the comparison.
+Runtime, precision, recall and false positives have not been measured or labeled.
+
+AI coding prompts used in this project
+- Review the project folder and Week 3 documents, then prepare a Streamlit
+  project kickoff for confirmation.
+- Proceed with a three-specialist approach in Code-Review-React.
+- Continue the implementation with OpenAI-compatible model configuration.
+The implementation prompts for the review specialists are in agents.py.
+
+Implementation iterations
+1. Reviewed the handout and companion architecture guide. Identified a mismatch:
+   the handout's code review deliverable specifies multiple agents, while the
+   companion guide uses one ReAct agent. Selected three specialists with approval.
+2. Prepared a fixture-only Streamlit interface for reviewing the proposed flow.
+3. Added GitHub snapshot loading, specialist tool loops, evidence validation,
+   checkpointed human approval, and a per-run posting ledger.
+4. Added behavioral tests and Streamlit interaction tests. Actual pass results
+   and remaining limits belong in VERIFICATION.txt after the checks complete.
+5. Fixed the native OpenAI tool-loop request by using Responses with explicit low
+   reasoning effort. Added credential-safe diagnostics and model access checks.
+6. Reproduced a 60 KB read limit on a 106 KB test module, then added source paging,
+   full-file search, path discovery, bounded directory search and shared pinned
+   caching. All 42 regression tests passed. Live runs retained coverage limits.
+
+Observations to complete after live runs
+- Which tools each specialist chose and why the trace supports agentic behavior.
+- Findings that were useful, rejected or missed, with source evidence.
+- Runtime and model call counts for each real case.
+- Failure behavior for a bad token, provider error, stale PR and rejected review.
+- What changed after inspecting false positives or missing findings.
+
+Suggested five-minute demo
+0:00-0:40  Explain the user task and the three specialists.
+0:40-1:20  Show the graph, focused tools, limits and human approval boundary.
+1:20-3:20  Run a real small Python PR; inspect the activity and evidence.
+3:20-4:10  Select useful findings and reject a finding; export the report.
+4:10-4:40  Demonstrate stale-change or failure handling using test evidence.
+4:40-5:00  Summarize measured results and show the code and documentation links.
+Use a repository you control if demonstrating posting; approve the actual
+comments in the app before posting. Never show secret values in the recording.
+
+Submission links to fill in
+GitHub repository: https://github.com/ajaybcd/GENACADEMY-P3
+Google Doc: pending
+Video: pending
+Three real evaluation reports: docs/reports/real-1.json through real-3.json
+
+The handout lists October 25, 2026 for Builder of the Week and November 11,
+2026 for certification. Check any updated organizer instructions before submission.

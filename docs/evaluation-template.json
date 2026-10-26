@@ -1,0 +1,104 @@
+{
+  "status": "three_real_samples_completed",
+  "repository_reference": "https://github.com/ajaybcd/GENACADEMY-P3",
+  "model_findings_are_not_independently_confirmed_bugs": true,
+  "tests": {
+    "passed": 42,
+    "elapsed_seconds": 11.52
+  },
+  "context_regression_check": {
+    "repository": "psf/requests",
+    "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+    "path": "tests/test_requests.py",
+    "bytes": 106660,
+    "lines": 3040,
+    "final_page": [
+      3020,
+      3040
+    ],
+    "final_page_has_more": false,
+    "full_file_search_matches_for_def_test": 233
+  },
+  "implementation_sha256": {
+    "review_app\\context.py": "724d208bb6485c2e625b8ea7bfbed4d1f1d28d111303c932189e694dd203a187",
+    "review_app\\github.py": "f5b20ffe9026e6f6214dd15bcd3de97517a2649e503f26ea87a40bd69889822c",
+    "review_app\\agents.py": "74e7d992c6cbacdbe1770b29c3e7e171e95361605471bd40dd297ba96fa3039b"
+  },
+  "cases": [
+    {
+      "case_id": "real-1",
+      "status": "live_analysis_complete_human_quality_assessment_pending",
+      "pr_url": "https://github.com/psf/requests/pull/6767",
+      "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+      "model": "gpt-5.6-terra",
+      "run_id": "89e9feb7dae74aea9b34eaf046e10e0c",
+      "model_calls": 17,
+      "validated_findings": 3,
+      "completed_specialists": [
+        "Correctness",
+        "Security",
+        "Tests"
+      ],
+      "limitations": [
+        "Correctness: read_context failed; inspect completeness before approval.",
+        "Security: read_context failed; inspect completeness before approval.",
+        "Tests: read_context failed; inspect completeness before approval."
+      ],
+      "posted": false,
+      "elapsed_seconds": null,
+      "true_positives": null,
+      "false_positives": null,
+      "missed_known_issues": null,
+      "exported_report_path": "docs/reports/real-1.json"
+    },
+    {
+      "case_id": "real-2",
+      "status": "live_analysis_complete_human_quality_assessment_pending",
+      "pr_url": "https://github.com/psf/requests/pull/6963",
+      "head_sha": "92bab7d1142db0c807060577233568e5f7734c9b",
+      "model": "gpt-5.6-terra",
+      "run_id": "7f3871f58a6f4f72abccb9aafcd21873",
+      "model_calls": 12,
+      "validated_findings": 2,
+      "completed_specialists": [
+        "Correctness",
+        "Security",
+        "Tests"
+      ],
+      "limitations": [],
+      "posted": false,
+      "elapsed_seconds": null,
+      "true_positives": null,
+      "false_positives": null,
+      "missed_known_issues": null,
+      "exported_report_path": "docs/reports/real-2.json"
+    },
+    {
+      "case_id": "real-3",
+      "status": "live_analysis_complete_human_quality_assessment_pending",
+      "pr_url": "https://github.com/psf/requests/pull/7502",
+      "head_sha": "be53ff13b12df758cba1220f48fca0be31bcf03c",
+      "model": "gpt-5.6-terra",
+      "run_id": "290c1eacdf8b4541a5bb1bb986156541",
+      "model_calls": 14,
+      "validated_findings": 0,
+      "completed_specialists": [
+        "Correctness",
+        "Security",
+        "Tests"
+      ],
+      "limitations": [
+        "Correctness: directory search in tests was bounded; not every file or subdirectory was searched.",
+        "Correctness: search_context: Additional context limit reached: six files per specialist.",
+        "Security: directory search in tests was bounded; not every file or subdirectory was searched.",
+        "Tests: directory search in tests was bounded; not every file or subdirectory was searched."
+      ],
+      "posted": false,
+      "elapsed_seconds": null,
+      "true_positives": null,
+      "false_positives": null,
+      "missed_known_issues": null,
+      "exported_report_path": "docs/reports/real-3.json"
+    }
+  ]
+}

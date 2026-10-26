@@ -1,0 +1,316 @@
+{
+  "run_id": "89e9feb7dae74aea9b34eaf046e10e0c",
+  "findings": [
+    {
+      "id": "e9df4c2885add846",
+      "path": "src/requests/adapters.py",
+      "line": 300,
+      "category": "Tests",
+      "severity": "Medium",
+      "body": "Missing regression test for the new default-CA path when verification is enabled. Input: call `HTTPAdapter.cert_verify` with a fake connection, an `https://` URL, `verify=True`, and no client cert, while making `extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)` return an existing temporary CA file. Expected result: the connection has `cert_reqs == \"CERT_REQUIRED\"` and `ca_certs` set to that resolved file (rather than relying on a preloaded context). The changed fallback has no corresponding test change, so a later change can reintroduce context-only verification or skip configuring the default bundle without detection. Add this focused mocked-connection test.",
+      "snippet": "            if not cert_loc:\n                cert_loc = extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)"
+    },
+    {
+      "id": "73aa50349f0f6e7b",
+      "path": "src/requests/adapters.py",
+      "line": 313,
+      "category": "Correctness",
+      "severity": "Medium",
+      "body": "This now supplies Requests' CA bundle even when the adapter was subclassed to pass a custom `ssl_context` via `init_poolmanager(..., ssl_context=context)`. In the prior behavior, detection of the pool manager context prevented the preloaded context from replacing it, and `cert_verify(..., verify=True)` deliberately did not set `ca_certs`; the custom context's trust configuration was therefore preserved. With this change, urllib3 loads `conn.ca_certs` into that supplied context, augmenting (and potentially defeating a deliberately restricted/pinned) trust store. For example, an adapter with a context containing only an internal CA and normal `verify=True` will additionally trust every CA in Requests' bundle. Only assign the default bundle when Requests is using its own default TLS configuration; leave CA settings unset for a caller-provided pool `ssl_context` (while retaining explicit `verify` path handling).",
+      "snippet": "            if not cert_loc:\n                cert_loc = extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)\n\n            if not cert_loc or not os.path.exists(cert_loc):\n                raise OSError(\n                    f\"Could not find a suitable TLS CA certificate bundle, \"\n                    f\"invalid path: {cert_loc}\"\n                )\n\n            conn.cert_reqs = \"CERT_REQUIRED\"\n\n            if not os.path.isdir(cert_loc):\n                conn.ca_certs = cert_loc\n            else:\n                conn.ca_cert_dir = cert_loc"
+    },
+    {
+      "id": "86d538dd50a30409",
+      "path": "src/requests/adapters.py",
+      "line": 306,
+      "category": "Tests",
+      "severity": "Low",
+      "body": "Missing regression test for failure while resolving the default bundle. Input: invoke `cert_verify` for an HTTPS URL with `verify=True` after making `extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)` return a nonexistent path. Expected result: it raises `OSError` with the unsuitable-CA-bundle message before mutating the connection into a verified configuration. This is a newly exercised default-path validation branch; add the test to preserve the request-time error behavior introduced by removing preload-time context setup.",
+      "snippet": "            if not cert_loc or not os.path.exists(cert_loc):\n                raise OSError(\n                    f\"Could not find a suitable TLS CA certificate bundle, \"\n                    f\"invalid path: {cert_loc}\"\n                )"
+    }
+  ],
+  "warnings": [
+    "Correctness: read_context failed; inspect completeness before approval.",
+    "Security: read_context failed; inspect completeness before approval.",
+    "Tests: read_context failed; inspect completeness before approval."
+  ],
+  "trace": [
+    {
+      "specialist": "Correctness",
+      "event": "model",
+      "detail": "Turn 1; total model calls 1/25"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "list_changed_files"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "model",
+      "detail": "Turn 2; total model calls 2/25"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_patch"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "model",
+      "detail": "Turn 3; total model calls 3/25"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "parse_python"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "model",
+      "detail": "Turn 4; total model calls 4/25"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "model",
+      "detail": "Turn 5; total model calls 5/25"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "model",
+      "detail": "Turn 6; total model calls 6/25"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "tool",
+      "detail": "submit_findings"
+    },
+    {
+      "specialist": "Correctness",
+      "event": "complete",
+      "detail": "1 proposed findings"
+    },
+    {
+      "specialist": "Security",
+      "event": "model",
+      "detail": "Turn 1; total model calls 7/25"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "list_changed_files"
+    },
+    {
+      "specialist": "Security",
+      "event": "model",
+      "detail": "Turn 2; total model calls 8/25"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_patch"
+    },
+    {
+      "specialist": "Security",
+      "event": "model",
+      "detail": "Turn 3; total model calls 9/25"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "parse_python"
+    },
+    {
+      "specialist": "Security",
+      "event": "model",
+      "detail": "Turn 4; total model calls 10/25"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Security",
+      "event": "model",
+      "detail": "Turn 5; total model calls 11/25"
+    },
+    {
+      "specialist": "Security",
+      "event": "tool",
+      "detail": "submit_findings"
+    },
+    {
+      "specialist": "Security",
+      "event": "complete",
+      "detail": "0 proposed findings"
+    },
+    {
+      "specialist": "Tests",
+      "event": "model",
+      "detail": "Turn 1; total model calls 12/25"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "list_changed_files"
+    },
+    {
+      "specialist": "Tests",
+      "event": "model",
+      "detail": "Turn 2; total model calls 13/25"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_patch"
+    },
+    {
+      "specialist": "Tests",
+      "event": "model",
+      "detail": "Turn 3; total model calls 14/25"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "parse_python"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Tests",
+      "event": "model",
+      "detail": "Turn 4; total model calls 15/25"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_context"
+    },
+    {
+      "specialist": "Tests",
+      "event": "model",
+      "detail": "Turn 5; total model calls 16/25"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "read_source"
+    },
+    {
+      "specialist": "Tests",
+      "event": "model",
+      "detail": "Turn 6; total model calls 17/25"
+    },
+    {
+      "specialist": "Tests",
+      "event": "tool",
+      "detail": "submit_findings"
+    },
+    {
+      "specialist": "Tests",
+      "event": "complete",
+      "detail": "2 proposed findings"
+    }
+  ],
+  "model_calls": 17,
+  "approved_ids": null,
+  "status": "awaiting_approval",
+  "review_url": null,
+  "source_url": "https://github.com/psf/requests/pull/6767",
+  "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+  "demo": false
+}

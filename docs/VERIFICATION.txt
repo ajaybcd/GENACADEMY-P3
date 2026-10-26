@@ -1,0 +1,80 @@
+BUILD VERIFICATION
+
+Environment: Windows, Python 3.12, isolated project .venv.
+
+Initial automated result: 23 tests passed in 10.75 seconds.
+After live-connection repairs: 31 tests passed in 10.59 seconds, including safe
+provider diagnostics, fail-fast analysis and a native Responses wire-payload test.
+After context retrieval repairs: 42 tests passed in 11.52 seconds, covering large
+file paging, searches past the first page, directory search, exact context budgets,
+shared pinned caches and commit isolation.
+Checks include:
+- Real LangGraph specialist loops using scripted model responses.
+- Tool-error observations and bounded unfinished loops.
+- Exact evidence anchoring, diff hunk parsing, severity sorting and deduplication.
+- No GitHub write before human approval; individual selected findings only.
+- Rejection, forged selection and empty selection never write.
+- Changed head or base commit invalidates approval.
+- Uncertain write cannot be repeated for the same run across graph instances.
+- Demo approval never posts.
+- HTTP transport checks for one batched, pinned COMMENT review.
+- Read retry recovery and pinned snapshot loading.
+- Streamlit demo load, selection, explicit approval and missing-credential errors.
+
+Public GitHub integration checks:
+PRs psf/requests #6767, #6963 and #7502 loaded successfully and their patches
+parsed against pinned source. #7502's oversized test file was explicitly skipped.
+PR #6962 exercised the expected block when no changed Python source fit limits.
+Exact commit IDs and file coverage are in real-input-smoke.json.
+These are real-input plumbing checks, not live model quality evaluations.
+
+Model client: ChatOpenAI constructed successfully with a dummy key and the
+app's configuration parameters, without a network call.
+The initial build tests did not use a real OpenAI key or paid model calls.
+No live GitHub review was posted. Posting behavior was verified using a mock
+HTTP transport and recording fake GitHub service.
+
+Local server started successfully at http://127.0.0.1:8501.
+Health endpoint returned HTTP 200 and 'ok'.
+Browser inspection covered the initial interface and sample findings view.
+
+The initial package setup encountered a Windows sandbox temporary-directory
+permission problem. Dependencies were installed only in the project .venv using
+a process-local directory-mode workaround. A first test pass also showed an
+interpreter-exit temp cleanup warning; the final pass used the same process-local
+workaround and exited cleanly. Production application code does not apply it.
+Exact installed package versions are in requirements-lock.txt.
+
+LIVE VALIDATION AFTER INITIAL BUILD
+The user entered their OpenAI key directly in the Streamlit password field.
+The model-list check accepted the key and confirmed the selected model was listed.
+The first Chat Completions tool request failed with HTTP 400 on reasoning_effort.
+The app now uses native Responses and explicit low reasoning effort for OpenAI
+reasoning models, retaining Chat Completions for compatible external providers.
+The same PR then completed all three specialists in 17 model calls with three
+validated findings: one potential correctness issue and two test suggestions.
+Each specialist encountered an extra-context read failure. Those warnings remain
+in the exported report. No GitHub write occurred and human review is pending.
+Report: reports/real-1.json. Run: 89e9feb7dae74aea9b34eaf046e10e0c.
+
+CONTEXT REPAIR AND TWO ADDITIONAL LIVE EVALUATIONS
+The original large-file failure was reproduced against the pinned 106,660-byte
+tests/test_requests.py module. The repaired reader successfully retrieved all
+3,040 lines, searched all test definitions and accessed the last page. Model-facing
+reads are paged and report their range and remaining content explicitly.
+The GitHub source cache is per run, keyed by repository/path/commit, and capped.
+
+PR #6963 completed all three specialists in 12 calls, with two validated findings
+and no warnings. Report: reports/real-2.json.
+PR #7502's first attempt exposed file-only search being given a directory path.
+That attempt is preserved in reports/real-3-attempt1.json. After bounded directory
+search was implemented, the verification run completed all three specialists in
+14 calls, with no proposed findings. Report: reports/real-3.json. It disclosed
+bounded directory coverage and one six-file context cap. No file-format error
+remained. These limits do not establish complete repository coverage.
+GitHub authentication entered by the user allowed reads after the anonymous quota
+was reached. No credential was extracted into source, reports or archives.
+No GitHub reviews were posted.
+
+Remaining validation: human findings-quality assessment, an approved test post in
+a repository the user controls, and hosted-session behavior if deployed.

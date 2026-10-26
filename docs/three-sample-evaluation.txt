@@ -1,0 +1,84 @@
+WEEK 3 THREE SAMPLE EVALUATION
+
+Three distinct real GitHub PRs were analyzed by the live three-specialist app.
+All selected runs completed Correctness, Security and Tests, then paused for
+human review. No GitHub reviews were posted. Runtime was not measured.
+
+RESULTS
+
+Sample  PR       Model calls  Findings  Limitations
+1       #6767    17           3         Before-fix extra-context read failures
+2       #6963    12           2         None reported
+3       #7502    14           0         Bounded directory search and context cap
+
+These findings passed deterministic source anchoring; that validates their
+location, not their correctness. Zero findings does not establish bug-free code.
+Human confirmation, false-positive labels and missing-issue assessment remain pending.
+
+CONTEXT REPAIR AND VALIDATION
+
+The old reader rejected files above 60 KB and silently returned only the first
+16,000 characters of context. It also treated a directory search as a file read.
+The reader now pages source, searches entire pinned files, discovers paths and
+supports bounded directory searches. It caches pinned source across specialists.
+The formerly rejected test module was read successfully: 106,660 bytes, 3,040
+lines, 233 test-definition matches; the final page was accessible without truncation.
+The expanded regression suite passed all 42 tests in 11.52 seconds.
+
+The first #7502 attempt reproduced directory misuse and was preserved as
+docs/reports/real-3-attempt1.json. The selected verification run removed that
+file-format error. It still disclosed bounded searches and one six-file context
+cap. These are coverage limits and are retained rather than labeled full coverage.
+Sample 1 is preserved unchanged as the original before-fix baseline.
+
+PER SAMPLE EVIDENCE
+
+real-1
+https://github.com/psf/requests/pull/6767
+Commit: 11d68c17bcd66bd3e2c5137b0a7aad7f59967102
+Run: 89e9feb7dae74aea9b34eaf046e10e0c
+Report: docs/reports/real-1.json
+Limitations: Correctness: read_context failed; inspect completeness before approval.; Security: read_context failed; inspect completeness before approval.; Tests: read_context failed; inspect completeness before approval.
+
+real-2
+https://github.com/psf/requests/pull/6963
+Commit: 92bab7d1142db0c807060577233568e5f7734c9b
+Run: 7f3871f58a6f4f72abccb9aafcd21873
+Report: docs/reports/real-2.json
+Limitations: None reported
+
+real-3
+https://github.com/psf/requests/pull/7502
+Commit: be53ff13b12df758cba1220f48fca0be31bcf03c
+Run: 290c1eacdf8b4541a5bb1bb986156541
+Report: docs/reports/real-3.json
+Limitations: Correctness: directory search in tests was bounded; not every file or subdirectory was searched.; Correctness: search_context: Additional context limit reached: six files per specialist.; Security: directory search in tests was bounded; not every file or subdirectory was searched.; Tests: directory search in tests was bounded; not every file or subdirectory was searched.
+
+PRIORITIZED MODEL FINDINGS
+
+Sample 1 | Medium | Tests | src/requests/adapters.py:300
+Missing regression test for the new default-CA path when verification is enabled. Input: call `HTTPAdapter.cert_verify` with a fake connection, an `https://` URL, `verify=True`, and no client cert, while making `extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)` return an existing temporary CA file. Expected result: the connection has `cert_reqs == "CERT_REQUIRED"` and `ca_certs` set to that resolved file (rather than relying on a preloaded context). The changed fallback has no corresponding test change, so a later change can reintroduce context-only verification or skip configuring the default bundle without detection. Add this focused mocked-connection test.
+Assessment: model-proposed; independent confirmation pending.
+
+Sample 1 | Medium | Correctness | src/requests/adapters.py:313
+This now supplies Requests' CA bundle even when the adapter was subclassed to pass a custom `ssl_context` via `init_poolmanager(..., ssl_context=context)`. In the prior behavior, detection of the pool manager context prevented the preloaded context from replacing it, and `cert_verify(..., verify=True)` deliberately did not set `ca_certs`; the custom context's trust configuration was therefore preserved. With this change, urllib3 loads `conn.ca_certs` into that supplied context, augmenting (and potentially defeating a deliberately restricted/pinned) trust store. For example, an adapter with a context containing only an internal CA and normal `verify=True` will additionally trust every CA in Requests' bundle. Only assign the default bundle when Requests is using its own default TLS configuration; leave CA settings unset for a caller-provided pool `ssl_context` (while retaining explicit `verify` path handling).
+Assessment: model-proposed; independent confirmation pending.
+
+Sample 2 | Medium | Correctness | src/requests/utils.py:222
+When `NETRC` is unset, this loop expands the default `~/.netrc` paths. `expanduser` can raise `KeyError` when no `HOME` is defined and the passwd lookup cannot resolve the current UID (the removed handling explicitly covered this case). That `KeyError` is not covered by the remaining outer `except`, so otherwise ordinary requests now fail during netrc lookup instead of continuing without netrc credentials. Restore the `KeyError` handling around `expanduser` (returning no auth), or handle it equivalently.
+Assessment: model-proposed; independent confirmation pending.
+
+Sample 1 | Low | Tests | src/requests/adapters.py:306
+Missing regression test for failure while resolving the default bundle. Input: invoke `cert_verify` for an HTTPS URL with `verify=True` after making `extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)` return a nonexistent path. Expected result: it raises `OSError` with the unsuitable-CA-bundle message before mutating the connection into a verified configuration. This is a newly exercised default-path validation branch; add the test to preserve the request-time error behavior introduced by removing preload-time context setup.
+Assessment: model-proposed; independent confirmation pending.
+
+Sample 2 | Low | Tests | src/requests/utils.py:222
+The removal of the local `KeyError` handling changes `get_netrc_auth` from returning no auth to propagating `KeyError` when home-directory expansion fails while checking the default `~/.netrc` locations. The added tests only set `NETRC` to an explicit path, so they never execute this fallback branch. Add a regression test that unsets `NETRC`, mocks `requests.utils.os.path.expanduser` to raise `KeyError`, and asserts the intended new result (currently, that `get_netrc_auth(...)` raises `KeyError`; if graceful no-auth behavior remains intended, assert `None` and restore handling). This makes the compatibility/error-path decision explicit.
+Assessment: model-proposed; independent confirmation pending.
+
+NEXT SUBMISSION STEPS
+
+Review the proposed findings and document confirmed issues, false positives and learnings.
+Create the required Google Doc, record a live demo under five minutes, and publish
+the app code to the intended repository when ready. The supplied repository reference
+is https://github.com/ajaybcd/GENACADEMY-P3.

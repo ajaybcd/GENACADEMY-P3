@@ -1,0 +1,63 @@
+[
+  {
+    "pr_url": "https://github.com/psf/requests/pull/6767",
+    "title": "Revert caching a default SSLContext",
+    "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+    "base_sha": "8ff173b186f135670879db9fbe1e68a6b5209c89",
+    "reviewed_files": [
+      {
+        "path": "src/requests/adapters.py",
+        "added_lines": 16,
+        "source_lines": 696
+      }
+    ],
+    "skipped": [],
+    "check": "PASS: live GitHub snapshot and patch parsing",
+    "model_evaluation": "NOT RUN"
+  },
+  {
+    "pr_number": 6962,
+    "check": "EXPECTED BLOCK: no in-scope source under size limits",
+    "error": "No reviewable Python changes were found. tests/test_requests.py: File exceeds the 60 KB context limit.",
+    "model_evaluation": "NOT RUN"
+  },
+  {
+    "pr_url": "https://github.com/psf/requests/pull/6963",
+    "title": "fix CVE 2024 47081: manual url parsing leads to netloc credentials leak",
+    "head_sha": "92bab7d1142db0c807060577233568e5f7734c9b",
+    "base_sha": "7bc45877a86192af77645e156eb3744f95b47dae",
+    "reviewed_files": [
+      {
+        "path": "src/requests/utils.py",
+        "added_lines": 1,
+        "source_lines": 1086
+      },
+      {
+        "path": "tests/test_utils.py",
+        "added_lines": 19,
+        "source_lines": 977
+      }
+    ],
+    "skipped": [],
+    "check": "PASS: live GitHub snapshot and patch parsing",
+    "model_evaluation": "NOT RUN"
+  },
+  {
+    "pr_url": "https://github.com/psf/requests/pull/7502",
+    "title": "Fix `_encode_files` detection for `__getattr__`-based file wrappers",
+    "head_sha": "be53ff13b12df758cba1220f48fca0be31bcf03c",
+    "base_sha": "661970d171d9c3e12e4c789c4768db647d8c4da0",
+    "reviewed_files": [
+      {
+        "path": "src/requests/models.py",
+        "added_lines": 3,
+        "source_lines": 1187
+      }
+    ],
+    "skipped": [
+      "tests/test_requests.py: File exceeds the 60 KB context limit."
+    ],
+    "check": "PASS: live GitHub snapshot and patch parsing",
+    "model_evaluation": "NOT RUN"
+  }
+]
